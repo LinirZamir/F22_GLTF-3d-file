@@ -16,7 +16,7 @@
     </style>
 </head>
 
-<body>
+<body oncontextmenu="return false;">
     <script type="module">
         import * as THREE from './js/three.module.js';
         import { GLTFLoader } from './js/GLTFLoader.js';
@@ -40,14 +40,28 @@
         directionalLight.position.set(1, 1, 1);
         scene.add(directionalLight);
 
-
+        let model;
         const loader = new GLTFLoader();
         loader.load('f22_raptor/scene.gltf', (gltf) => {
-            scene.add(gltf.scene);
+            model = gltf.scene;
+            scene.add(model);
+
+            // Adjust camera position based on model's bounding box
+            const box = new THREE.Box3().setFromObject(model);
+            const size = box.getSize(new THREE.Vector3());
+            const maxSize = Math.max(size.x, size.y, size.z);
+            const cameraDistance = maxSize / (2 * Math.tan((camera.fov / 2) * (Math.PI / 180)));
+            camera.position.z = cameraDistance;
+            camera.updateProjectionMatrix();
+
+            // Update the orbit control target
+            const center = box.getCenter(new THREE.Vector3());
+            controls.target.copy(center);
+            controls.update();
         });
 
         const controls = new OrbitControls(camera, renderer.domElement);
-        camera.position.z = 5;
+        controls.enableZoom = false; // Disable zooming
 
         const animate = function () {
             requestAnimationFrame(animate);
@@ -57,7 +71,6 @@
         };
 
         animate();
-
 
         // Handle window resize
         window.addEventListener('resize', () => {
