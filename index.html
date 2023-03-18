@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLTF Model Viewer</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <script type="module">
+        import * as THREE from './js/three.module.js';
+        import { GLTFLoader } from './js/GLTFLoader.js';
+        import { OrbitControls } from './js/OrbitControls.js';
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87ceeb);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Add ambient light
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+
+        // Add directional light
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(1, 1, 1);
+        scene.add(directionalLight);
+
+
+        const loader = new GLTFLoader();
+        loader.load('f22_raptor/scene.gltf', (gltf) => {
+            scene.add(gltf.scene);
+        });
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        camera.position.z = 5;
+
+        const animate = function () {
+            requestAnimationFrame(animate);
+
+            controls.update();
+            renderer.render(scene, camera);
+        };
+
+        animate();
+
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        const socket = new WebSocket('ws://plc-websocket-server:port');
+        // Connection opened
+        socket.addEventListener('open', (event) => {
+            console.log('WebSocket connection opened:', event);
+        });
+        // Listen for rotation data
+        socket.addEventListener('message', (event) => {
+            const rotationData = JSON.parse(event.data);
+            if (model) {
+                model.rotation.x = rotationData.x;
+                model.rotation.y = rotationData.y;
+                model.rotation.z = rotationData.z;
+            }
+        });
+
+    </script>
+</body>
+
+</html>
