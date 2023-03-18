@@ -1,8 +1,0 @@
-Model Information:
-* title:	F22 Raptor
-* source:	https://sketchfab.com/3d-models/f22-raptor-2a64abf0866a405c865466c7642ca689
-* author:	Khan (https://sketchfab.com/Khan.K)
-
-Model License:
-* license type:	SKETCHFAB Editorial (https://sketchfab.com/licenses)
-* requirements:	Use only in connection with events that are newsworthy or of public interest
