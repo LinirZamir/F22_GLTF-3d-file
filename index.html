@@ -90,12 +90,11 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        const socket = new WebSocket('ws://plc-websocket-server:port');
-        // Connection opened
+        const socket = new WebSocket('ws://server:port'); 
+        // Is socket ok? We can do any other communication protocol to get the XYZ data
         socket.addEventListener('open', (event) => {
-            console.log('WebSocket connection opened:', event);
+            console.log('connection opened:', event);
         });
-        // Listen for rotation data
         socket.addEventListener('message', (event) => {
             const rotationData = JSON.parse(event.data);
             if (model) {
