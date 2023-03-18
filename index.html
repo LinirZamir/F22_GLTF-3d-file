@@ -62,6 +62,7 @@
 
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableZoom = false; // Disable zooming
+        controls.mouseButtons.RIGHT = null; // Disable right mouse button movement
 
         const animate = function () {
             requestAnimationFrame(animate);
